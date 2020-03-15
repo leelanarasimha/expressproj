@@ -3,7 +3,23 @@
 
     <body>
         <%- include('../includes/navigation.ejs') %>
+        <% if (!orders.length) { %>
         <main>
             <h1>Nothing there!</h1>
         </main>
+        <% } else { %>
+            <div>
+               <h3>Your Order Details</h3> 
+               <div>
+                <% orders.forEach(order => { %>
+                    <ul>
+                        <% order.Products.forEach(product => { %>
+                            <li><%= product.title %></li>
+                        <% }) %>
+                        
+                    </ul>
+                    <% }) %>
+               </div>
+            </div>
+            <% } %>
         <%- include('../includes/end.ejs') %>
