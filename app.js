@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/error');
 const mongodb = require('./util/database');
+const User = require('./models/user');
 
 const app = express();
 
@@ -15,7 +16,14 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 app.use((req, res, next) => {
-	next();
+	User.findById(`5e76d2f890c8c611fb47872f`)
+		.then((user) => {
+			req.user = new User(user.name, user.email, user.cart, user._id);
+			next();
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 });
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -27,7 +35,5 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 
 mongodb.mongoConnect(() => {
-	console.log('connected');
-
 	app.listen(4500);
 });
