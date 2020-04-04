@@ -83,6 +83,7 @@ class User {
 		});
 
 		const db = getDb();
+
 		return db
 			.collection(`users`)
 			.updateOne(
