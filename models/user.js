@@ -52,9 +52,14 @@ class User {
 
 	getCart() {
 		const db = getDb();
+		console.log('leela sdsd');
+		console.log(this.cart.items);
 		const productIds = this.cart.items.map((p) => {
 			return p.productId;
 		});
+
+		console.log(productIds);
+		console.log('leela');
 
 		return db
 			.collection(`products`)
@@ -70,6 +75,20 @@ class User {
 					};
 				});
 			});
+	}
+
+	deleteItemFromCart(productId) {
+		const updatedCartItems = this.cart.items.filter((item) => {
+			return productId.toString() !== item.productId.toString();
+		});
+
+		const db = getDb();
+		return db
+			.collection(`users`)
+			.updateOne(
+				{ _id: new mongo.ObjectId(this._id) },
+				{ $set: { cart: { items: updatedCartItems } } }
+			);
 	}
 
 	static findById(id) {
