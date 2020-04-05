@@ -2,9 +2,9 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const errorController = require('./controllers/error');
-const mongodb = require('./util/database');
 const User = require('./models/user');
 
 const app = express();
@@ -16,10 +16,9 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 app.use((req, res, next) => {
-	User.findById(`5e76d2f890c8c611fb47872f`)
+	User.findById(`5e88cb15fc0e7b39a88633f8`)
 		.then((user) => {
-			console.log(user.cart);
-			req.user = new User(user.name, user.email, user.cart, user._id);
+			req.user = user;
 			next();
 		})
 		.catch((err) => {
@@ -35,6 +34,16 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongodb.mongoConnect(() => {
-	app.listen(4500);
-});
+mongoose
+	.connect(
+		`mongodb+srv://leela:narasimha24@cluster0-i01az.mongodb.net/shop?retryWrites=true&w=majority`
+	)
+	.then((result) => {
+		User.findOne().then((user) => {
+			if (!user) {
+				const user = new User({ name: 'Leela', email: 'leela@leela.com', items: [] });
+				user.save();
+			}
+		});
+		app.listen(4500);
+	});
